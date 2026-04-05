@@ -12,28 +12,22 @@ y = np.array([1000, 1100, 1250, 1320, 1450])
 model = LinearRegression()
 model.fit(X, y)
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    hasil = None
 
-@app.route('/predict', methods=['POST'])
-def predict():
-    tahun_input = request.form.get('tahun')
-    
-    if tahun_input:
-        try:
-            tahun = float(tahun_input)
-            prediksi = model.predict([[tahun]])
-            hasil = round(prediksi[0], 2)
+    if request.method == 'POST':
+        tahun_input = request.form.get('tahun')
 
-            return render_template(
-                'index.html',
-                prediction_text=f"Perkiraan jumlah UMKM pada tahun {int(tahun)} adalah {hasil}"
-            )
-        except:
-            return render_template('index.html', prediction_text="Terjadi kesalahan input!")
+        if tahun_input:
+            try:
+                tahun = float(tahun_input)
+                prediksi = model.predict([[tahun]])
+                hasil = round(prediksi[0], 2)
+            except:
+                hasil = "Terjadi kesalahan"
 
-    return render_template('index.html')
+    return render_template('index.html', hasil=hasil)
 
 
 if __name__ == '__main__':
